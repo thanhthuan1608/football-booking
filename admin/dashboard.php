@@ -1,117 +1,109 @@
-<?php
-session_start();
-require_once("../config/database.php");
+<div class="d-flex">
 
-// Kiểm tra đăng nhập admin
-if (!isset($_SESSION['role']) || $_SESSION['role'] != 'admin') {
-    header("Location: ../login.php");
-    exit();
-}
+<div
+class="bg-dark text-white p-3"
+style="width:250px;height:100vh;">
 
-// Tổng số sân
-$sqlFields = "SELECT COUNT(*) AS total FROM football_fields";
-$resultFields = mysqli_query($conn, $sqlFields);
-$totalFields = mysqli_fetch_assoc($resultFields)['total'];
+<h3>⚽ Admin</h3>
 
-// Tổng số khách hàng
-$sqlUsers = "SELECT COUNT(*) AS total FROM users WHERE role='user'";
-$resultUsers = mysqli_query($conn, $sqlUsers);
-$totalUsers = mysqli_fetch_assoc($resultUsers)['total'];
+<hr>
 
-// Tổng số đơn đặt sân
-$sqlBookings = "SELECT COUNT(*) AS total FROM bookings";
-$resultBookings = mysqli_query($conn, $sqlBookings);
-$totalBookings = mysqli_fetch_assoc($resultBookings)['total'];
+<a
+href="dashboard.php"
+class="text-white d-block mb-3">
 
-// Tổng doanh thu
-$sqlRevenue = "SELECT SUM(total_price) AS revenue
-               FROM bookings
-               WHERE status='completed'";
+Dashboard
 
-$resultRevenue = mysqli_query($conn, $sqlRevenue);
-$revenue = mysqli_fetch_assoc($resultRevenue)['revenue'];
+</a>
 
-if ($revenue == null) {
-    $revenue = 0;
-}
-?>
+<a
+href="manage_fields.php"
+class="text-white d-block mb-3">
 
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>Dashboard Admin</title>
+Quản lý sân
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-          rel="stylesheet">
-</head>
-<body>
+</a>
 
-<div class="container mt-5">
+<a
+href="manage_bookings.php"
+class="text-white d-block mb-3">
 
-    <h2 class="mb-4">ADMIN DASHBOARD</h2>
+Đặt sân
 
-    <div class="row">
+</a>
 
-        <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5>Tổng Sân</h5>
-                    <h3><?= $totalFields ?></h3>
-                </div>
-            </div>
-        </div>
+<a
+href="manage_users.php"
+class="text-white d-block mb-3">
 
-        <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5>Khách Hàng</h5>
-                    <h3><?= $totalUsers ?></h3>
-                </div>
-            </div>
-        </div>
+Người dùng
 
-        <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5>Đơn Đặt</h5>
-                    <h3><?= $totalBookings ?></h3>
-                </div>
-            </div>
-        </div>
+</a>
 
-        <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h5>Doanh Thu</h5>
-                    <h3><?= number_format($revenue) ?> VNĐ</h3>
-                </div>
-            </div>
-        </div>
+<a
+href="../logout.php"
+class="text-danger d-block">
 
-    </div>
+Đăng xuất
 
-    <hr>
-
-    <h4>Menu Quản Trị</h4>
-
-    <a href="manage_fields.php" class="btn btn-primary">
-        Quản Lý Sân
-    </a>
-
-    <a href="manage_bookings.php" class="btn btn-success">
-        Quản Lý Đặt Sân
-    </a>
-
-    <a href="manage_users.php" class="btn btn-warning">
-        Quản Lý Người Dùng
-    </a>
-
-    <a href="../logout.php" class="btn btn-danger">
-        Đăng Xuất
-    </a>
+</a>
 
 </div>
 
-</body>
-</html>
+<div class="container mt-4">
+
+<div class="row">
+
+<div class="col-md-4">
+
+<div class="card shadow">
+
+<div class="card-body">
+
+<h4>Tổng sân</h4>
+
+<h2>3</h2>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-md-4">
+
+<div class="card shadow">
+
+<div class="card-body">
+
+<h4>Đơn đặt</h4>
+
+<h2>15</h2>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-md-4">
+
+<div class="card shadow">
+
+<div class="card-body">
+
+<h4>Doanh thu</h4>
+
+<h2>8.5M</h2>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>

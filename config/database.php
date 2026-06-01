@@ -1,17 +1,12 @@
 <?php
 
-$host = "localhost";
-$user = "root";
-$password = "";
-$database = "football_booking";
-
 $conn = mysqli_connect(
-    $host,
-    $user,
-    $password,
-    $database
+    "localhost",
+    "root",
+    "",
+    "football_booking"
 );
 
-if (!$conn) {
-    die("Kết nối thất bại: " . mysqli_connect_error());
+if(!$conn){
+    die("Lỗi kết nối database");
 }
