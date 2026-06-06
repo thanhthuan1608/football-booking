@@ -14,12 +14,13 @@ $field_id = $_GET['id'];
 
 $fieldResult = mysqli_query(
     $conn,
-    "SELECT * FROM football_fields WHERE id=$field_id"
+    "SELECT * FROM football_fields WHERE id = $field_id"
 );
 
 $field = mysqli_fetch_assoc($fieldResult);
 
 $success = false;
+$error = "";
 
 if(isset($_POST['book']))
 {
@@ -31,46 +32,78 @@ if(isset($_POST['book']))
 
     $end_time = $_POST['end_time'];
 
-    $hours =
-        strtotime($end_time)
-        -
-        strtotime($start_time);
+    // Kiểm tra giờ hợp lệ
+    if($start_time >= $end_time)
+    {
+        $error = "❌ Giờ kết thúc phải lớn hơn giờ bắt đầu!";
+    }
+    else
+    {
+        // Kiểm tra trùng lịch
+        $checkSql = "
+        SELECT *
+        FROM bookings
+        WHERE field_id = '$field_id'
+        AND booking_date = '$booking_date'
+        AND status != 'cancelled'
+        AND (
+            ('$start_time' < end_time)
+            AND
+            ('$end_time' > start_time)
+        )
+        ";
 
-    $hours = $hours / 3600;
+        $checkResult = mysqli_query($conn,$checkSql);
 
-    $total_price =
-        $hours *
-        $field['price_per_hour'];
+        if(mysqli_num_rows($checkResult) > 0)
+        {
+            $error = "❌ Khung giờ này đã có người đặt!";
+        }
+        else
+        {
+            $hours =
+                strtotime($end_time)
+                -
+                strtotime($start_time);
 
-    $sql = "
-    INSERT INTO bookings
-    (
-        user_id,
-        field_id,
-        booking_date,
-        start_time,
-        end_time,
-        total_price
-    )
-    VALUES
-    (
-        '$user_id',
-        '$field_id',
-        '$booking_date',
-        '$start_time',
-        '$end_time',
-        '$total_price'
-    )";
+            $hours = $hours / 3600;
 
-    mysqli_query($conn,$sql);
+            $total_price =
+                $hours *
+                $field['price_per_hour'];
 
-    $success = true;
+            $sql = "
+            INSERT INTO bookings
+            (
+                user_id,
+                field_id,
+                booking_date,
+                start_time,
+                end_time,
+                total_price
+            )
+            VALUES
+            (
+                '$user_id',
+                '$field_id',
+                '$booking_date',
+                '$start_time',
+                '$end_time',
+                '$total_price'
+            )";
+
+            mysqli_query($conn,$sql);
+
+            $success = true;
+        }
+    }
 }
 
 ?>
 
 <!DOCTYPE html>
 <html>
+
 <head>
 
 <meta charset="UTF-8">
@@ -78,23 +111,73 @@ if(isset($_POST['book']))
 <meta name="viewport"
 content="width=device-width, initial-scale=1">
 
-<title>Đặt sân</title>
+<title>Đặt sân bóng</title>
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+<link
+href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
 rel="stylesheet">
 
 </head>
 
 <body class="bg-light">
 
+<!-- Breadcrumb -->
+
 <div class="container mt-3">
 
-<a href="fields.php"
-class="btn btn-secondary">
+<nav>
 
-← Quay lại danh sách sân
+<ol class="breadcrumb">
+
+<li class="breadcrumb-item">
+
+<a href="../index.php">
+
+🏠 Trang chủ
 
 </a>
+
+</li>
+
+<li class="breadcrumb-item">
+
+<a href="fields.php">
+
+⚽ Danh sách sân
+
+</a>
+
+</li>
+
+<li class="breadcrumb-item active">
+
+Đặt sân
+
+</li>
+
+</ol>
+
+</nav>
+
+<div class="mb-3">
+
+<a
+href="../index.php"
+class="btn btn-success">
+
+🏠 Trang chủ
+
+</a>
+
+<a
+href="fields.php"
+class="btn btn-secondary">
+
+← Danh sách sân
+
+</a>
+
+</div>
 
 </div>
 
@@ -102,7 +185,7 @@ class="btn btn-secondary">
 
 <div class="row">
 
-<!-- Thông tin sân -->
+<!-- THÔNG TIN SÂN -->
 
 <div class="col-md-6">
 
@@ -125,11 +208,23 @@ style="height:400px;object-fit:cover;">
 
 </h2>
 
+<?php if($field['status'] == 'available'){ ?>
+
 <span class="badge bg-success">
 
-Còn trống
+🟢 Còn trống
 
 </span>
+
+<?php } else { ?>
+
+<span class="badge bg-danger">
+
+🔴 Bảo trì
+
+</span>
+
+<?php } ?>
 
 <hr>
 
@@ -146,6 +241,7 @@ Còn trống
 <h4 class="mb-0">
 
 💰
+
 <?= number_format(
 $field['price_per_hour']
 ); ?>
@@ -168,7 +264,7 @@ VNĐ / giờ
 
 </div>
 
-<!-- Form đặt sân -->
+<!-- FORM ĐẶT SÂN -->
 
 <div class="col-md-6">
 
@@ -186,7 +282,47 @@ VNĐ / giờ
 
 <div class="alert alert-success">
 
+<h5>
+
 ✅ Đặt sân thành công!
+
+</h5>
+
+<hr>
+
+<a
+href="history.php"
+class="btn btn-primary">
+
+📜 Xem lịch sử đặt sân
+
+</a>
+
+<a
+href="../index.php"
+class="btn btn-success">
+
+🏠 Về trang chủ
+
+</a>
+
+<a
+href="fields.php"
+class="btn btn-secondary">
+
+⚽ Tiếp tục đặt sân
+
+</a>
+
+</div>
+
+<?php } ?>
+
+<?php if(!empty($error)){ ?>
+
+<div class="alert alert-danger">
+
+<?= $error ?>
 
 </div>
 
@@ -247,7 +383,9 @@ required>
 📌 Sân:
 
 <b>
+
 <?= $field['field_name']; ?>
+
 </b>
 
 <br><br>
@@ -255,10 +393,13 @@ required>
 💰 Giá:
 
 <b>
+
 <?= number_format(
 $field['price_per_hour']
 ); ?>
-VNĐ/giờ
+
+VNĐ / giờ
+
 </b>
 
 </div>
@@ -287,8 +428,10 @@ class="btn btn-success w-100">
 <footer
 class="bg-dark text-white text-center p-3 mt-5">
 
-Cantho booking football 
+© 2026 CanTho Football Booking
+
 </footer>
 
 </body>
+
 </html>

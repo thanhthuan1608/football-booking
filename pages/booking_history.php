@@ -1,49 +1,67 @@
-<?php
+<!DOCTYPE html>
+<html>
+<head>
 
-session_start();
+<meta charset="UTF-8">
 
-require_once("../config/database.php");
+<title>Lịch sử đặt sân</title>
 
-$user_id = $_SESSION['user_id'];
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-$sql = "
-SELECT
-b.*,
-f.field_name
+</head>
 
-FROM bookings b
+<body class="bg-light">
 
-JOIN football_fields f
-ON b.field_id = f.id
+<div class="container mt-5">
 
-WHERE b.user_id = $user_id
+<h2 class="mb-4">
+📜 Lịch sử đặt sân
+</h2>
 
-ORDER BY b.id DESC
-";
+<a href="../index.php"
+class="btn btn-secondary mb-3">
 
-$result = mysqli_query($conn,$sql);
+← Trang chủ
 
-?>
+</a>
 
-<h1>Lịch sử đặt sân</h1>
+<div class="card shadow">
 
-<table border="1">
+<div class="card-body">
+
+<table class="table table-striped table-hover">
+
+<thead class="table-success">
 
 <tr>
-    <th>Sân</th>
-    <th>Ngày</th>
-    <th>Giờ</th>
-    <th>Tiền</th>
-    <th>Trạng thái</th>
+
+<th>Sân</th>
+
+<th>Ngày</th>
+
+<th>Giờ</th>
+
+<th>Tổng tiền</th>
+
+<th>Trạng thái</th>
+
 </tr>
+
+</thead>
+
+<tbody>
 
 <?php while($row=mysqli_fetch_assoc($result)): ?>
 
 <tr>
 
-<td><?= $row['field_name'] ?></td>
+<td>
+<?= $row['field_name'] ?>
+</td>
 
-<td><?= $row['booking_date'] ?></td>
+<td>
+<?= $row['booking_date'] ?>
+</td>
 
 <td>
 <?= $row['start_time'] ?>
@@ -51,15 +69,52 @@ $result = mysqli_query($conn,$sql);
 <?= $row['end_time'] ?>
 </td>
 
-<td>
+<td class="text-success">
+
 <?= number_format($row['total_price']) ?>
+
 VNĐ
+
 </td>
 
-<td><?= $row['status'] ?></td>
+<td>
+
+<?php
+
+if($row['status']=='pending')
+{
+    echo "<span class='badge bg-warning'>Chờ xác nhận</span>";
+}
+elseif($row['status']=='confirmed')
+{
+    echo "<span class='badge bg-primary'>Đã xác nhận</span>";
+}
+elseif($row['status']=='completed')
+{
+    echo "<span class='badge bg-success'>Hoàn thành</span>";
+}
+else
+{
+    echo "<span class='badge bg-danger'>Đã hủy</span>";
+}
+
+?>
+
+</td>
 
 </tr>
 
 <?php endwhile; ?>
 
+</tbody>
+
 </table>
+
+</div>
+
+</div>
+
+</div>
+
+</body>
+</html>
