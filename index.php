@@ -67,8 +67,12 @@ footer{
 Đăng nhập
 </a>
 
-<a href="register.php" class="btn btn-warning">
+<a
+href="register.php"
+class="btn btn-warning">
+
 Đăng ký
+
 </a>
 
 </div>

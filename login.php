@@ -106,6 +106,16 @@ class="btn btn-success w-100">
 Đăng nhập
 
 </button>
+<div class="text-center mt-3">
+
+Chưa có tài khoản?
+
+<a href="register.php">
+
+Đăng ký ngay
+
+</a>
+</div>
 
 </form>
 
